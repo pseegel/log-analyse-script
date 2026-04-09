@@ -1,0 +1,70 @@
+{
+  "anzahl_requests": 25,
+  "status_verteilung": {
+    "200": 16,
+    "404": 2,
+    "201": 3,
+    "500": 2,
+    "401": 1,
+    "503": 1
+  },
+  "endpoints": {
+    "/api/users": 5,
+    "/api/users/42": 1,
+    "/api/login": 4,
+    "/api/products": 7,
+    "/api/products/99": 1,
+    "/api/orders": 4,
+    "/api/orders/7": 1,
+    "/api/users/13": 1,
+    "/api/products/55": 1
+  },
+  "requests_pro_stunde": {
+    "09": 8,
+    "10": 9,
+    "11": 8
+  },
+  "fehlerquote": 0.24,
+  "top_langsamste": [
+    {
+      "datum": "2026-04-08",
+      "zeit": "11:22:56",
+      "methode": "GET",
+      "pfad": "/api/products",
+      "status": 503,
+      "dauer_ms": 5234
+    },
+    {
+      "datum": "2026-04-08",
+      "zeit": "10:18:42",
+      "methode": "GET",
+      "pfad": "/api/products",
+      "status": 500,
+      "dauer_ms": 4123
+    },
+    {
+      "datum": "2026-04-08",
+      "zeit": "09:15:02",
+      "methode": "GET",
+      "pfad": "/api/products",
+      "status": 500,
+      "dauer_ms": 3456
+    },
+    {
+      "datum": "2026-04-08",
+      "zeit": "11:15:45",
+      "methode": "POST",
+      "pfad": "/api/orders",
+      "status": 201,
+      "dauer_ms": 1890
+    },
+    {
+      "datum": "2026-04-08",
+      "zeit": "10:15:18",
+      "methode": "POST",
+      "pfad": "/api/orders",
+      "status": 201,
+      "dauer_ms": 1567
+    }
+  ]
+}
