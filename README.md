@@ -5,6 +5,15 @@ Liest eine Logdatei im Format `datum zeit methode pfad status dauer_ms` und erst
 
 ## Nutzung
 
-    python analyse.py
+```bash
+# Nutzt Standardwerte (access.log -> report.json)
+python analyse.py
 
-Erwartet `access.log` im selben Verzeichnis. Schreibt `report.json`.
+# Eigener Input, Standard-Output (report.json)
+python analyse.py webserver.log
+
+# Eigener Input und Output
+python analyse.py webserver.log analyse_bericht.json
+```
+
+Das Tool erwartet Logdateien im Format `datum zeit methode pfad status dauer_ms`.

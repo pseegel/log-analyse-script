@@ -2,10 +2,9 @@
 
 from collections import defaultdict
 from dataclasses import dataclass, asdict
+import argparse
 import json
-
-INPUT_PATH = "access.log"
-OUTPUT_PATH = "report.json"
+import sys
 
 @dataclass
 class LogEntry:
@@ -77,11 +76,35 @@ def schreibe_json(pfad: str, inhalt: dict) -> None:
 
 
 def main() -> None:
-    logs = lade_logs(INPUT_PATH)
-    report = erstelle_report(logs)
-    schreibe_json(OUTPUT_PATH, report)
-    print(f"Report erstellt: {len(logs)} Einträge analysiert")
-    print(f"Fehlerquote: {report['fehlerquote']:.1%}")
+    parser = argparse.ArgumentParser(description="Webserver-Log-Analysetool")
+    parser.add_argument(
+        "input", 
+        nargs="?", 
+        default="access.log", 
+        help="Pfad zum Input-Log (default: access.log)"
+    )
+    parser.add_argument(
+        "output", 
+        nargs="?", 
+        default="report.json", 
+        help="Pfad zum Output-Report (default: report.json)"
+    )
+    args = parser.parse_args()
+
+    try:
+        logs = lade_logs(args.input)
+        report = erstelle_report(logs)
+        schreibe_json(args.output, report)
+        print(f"Report erstellt: {len(logs)} Einträge analysiert")
+        print(f"Eingabe: {args.input}")
+        print(f"Ausgabe: {args.output}")
+        print(f"Fehlerquote: {report['fehlerquote']:.1%}")
+    except FileNotFoundError:
+        print(f"Fehler: Die Datei '{args.input}' wurde nicht gefunden.")
+        sys.exit(1)
+    except Exception as e:
+        print(f"Fehler bei der Analyse: {e}")
+        sys.exit(1)
 
 
 if __name__ == "__main__":
