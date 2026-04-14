@@ -10,6 +10,7 @@ DEFAULT_INPUT_PATH = "access.log"
 DEFAULT_OUTPUT_PATH = "report.json"
 VERSION = "0.2.0"
 
+
 @dataclass
 class LogEntry:
     datum: str
@@ -91,14 +92,14 @@ def main() -> None:
         nargs="?",
         default=DEFAULT_INPUT_PATH,
         metavar="PFAD",
-        help="Pfad zur einzulesenden Log Datei"
+        help="Pfad zur einzulesenden Log Datei",
     )
     parser.add_argument(
         "output_file",
         nargs="?",
         default=DEFAULT_OUTPUT_PATH,
         metavar="PFAD",
-        help="Pfad zur ausgegebenen JSON Datei"
+        help="Pfad zur ausgegebenen JSON Datei",
     )
     parser.add_argument("--version", action="version", version="%(prog)s " + VERSION)
     args = parser.parse_args()
@@ -106,7 +107,7 @@ def main() -> None:
         logs = lade_logs(args.input_file)
     except FileNotFoundError:
         print(
-            f"Fehler: Datei '{args.input_file}' nicht gefunden", 
+            f"Fehler: Datei '{args.input_file}' nicht gefunden",
             file=sys.stderr,
         )
         sys.exit(1)
