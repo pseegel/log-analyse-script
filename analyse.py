@@ -2,8 +2,9 @@
 
 from collections import defaultdict
 from dataclasses import dataclass, asdict
-import json
 import argparse
+import json
+import sys
 
 DEFAULT_INPUT_PATH = "access.log"
 DEFAULT_OUTPUT_PATH = "report.json"
@@ -101,7 +102,15 @@ def main() -> None:
     )
     parser.add_argument("--version", action="version", version="%(prog)s " + VERSION)
     args = parser.parse_args()
-    logs = lade_logs(args.input_file)
+    try:
+        logs = lade_logs(args.input_file)
+    except FileNotFoundError:
+        print(
+            f"Fehler: Datei '{args.input_file}' nicht gefunden", 
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
     report = erstelle_report(logs)
     schreibe_json(args.output_file, report)
     print(f"Report erstellt: {len(logs)} Einträge analysiert")
