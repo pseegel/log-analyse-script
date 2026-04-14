@@ -3,9 +3,11 @@
 from collections import defaultdict
 from dataclasses import dataclass, asdict
 import json
+import argparse
 
-INPUT_PATH = "access.log"
-OUTPUT_PATH = "report.json"
+DEFAULT_INPUT_PATH = "access.log"
+DEFAULT_OUTPUT_PATH = "report.json"
+VERSION = "0.2.0"
 
 @dataclass
 class LogEntry:
@@ -77,9 +79,31 @@ def schreibe_json(pfad: str, inhalt: dict) -> None:
 
 
 def main() -> None:
-    logs = lade_logs(INPUT_PATH)
+    parser = argparse.ArgumentParser(
+        description=(
+            "Parst Webserver-Logs und erzeugt einen aggregierten JSON-Report "
+            "(Status, Endpoints, Latenz)"
+        )
+    )
+    parser.add_argument(
+        "input_file",
+        nargs="?",
+        default=DEFAULT_INPUT_PATH,
+        metavar="PFAD",
+        help="Pfad zur einzulesenden Log Datei"
+    )
+    parser.add_argument(
+        "output_file",
+        nargs="?",
+        default=DEFAULT_OUTPUT_PATH,
+        metavar="PFAD",
+        help="Pfad zur ausgegebenen JSON Datei"
+    )
+    parser.add_argument("--version", action="version", version="%(prog)s " + VERSION)
+    args = parser.parse_args()
+    logs = lade_logs(args.input_file)
     report = erstelle_report(logs)
-    schreibe_json(OUTPUT_PATH, report)
+    schreibe_json(args.output_file, report)
     print(f"Report erstellt: {len(logs)} Einträge analysiert")
     print(f"Fehlerquote: {report['fehlerquote']:.1%}")
 
