@@ -8,11 +8,13 @@ import sys
 
 DEFAULT_INPUT_PATH = "access.log"
 DEFAULT_OUTPUT_PATH = "report.json"
-VERSION = "0.2.0"
+VERSION = "0.4.0"
 
 
 @dataclass
 class LogEntry:
+    """Stellt eine Zeile des übergebenen Logs dar."""
+
     datum: str
     zeit: str
     methode: str
@@ -22,6 +24,7 @@ class LogEntry:
 
 
 def parse_zeile(zeile: str) -> LogEntry:
+    """Parst eine übergebene Zeile als LogEntry Dataclass."""
     teile = zeile.split()
     return LogEntry(
         datum=teile[0],
@@ -34,11 +37,28 @@ def parse_zeile(zeile: str) -> LogEntry:
 
 
 def lade_logs(pfad: str) -> list[LogEntry]:
+    """Liest eine Log Datei ein und Parst sie zu einer Liste von LogEntry Dataclasses.
+
+    Args:
+        pfad: Pfad zur Eingabedatei.
+
+    Returns:
+        Liste der gefundenen Einträge.
+
+    Raises:
+        FileNotFoundError: Wenn die Datei nicht existiert.
+    """
     with open(pfad, encoding="utf-8") as file:
         return [parse_zeile(zeile) for zeile in file]
 
 
 def zaehle_status(logs: list[LogEntry]) -> dict[int, int]:
+    """Zählt Requests pro HTTP-Status.
+
+    Returns:
+        Dict aus Status und gefundener Anzahl.
+
+    """
     result = defaultdict(int)
     for entry in logs:
         result[entry.status] += 1
@@ -46,6 +66,11 @@ def zaehle_status(logs: list[LogEntry]) -> dict[int, int]:
 
 
 def zaehle_endpoints(logs: list[LogEntry]) -> dict[str, int]:
+    """Zählt Requests pro Endpoint.
+
+    Returns:
+        Dict aus Endpunkt und gefundener Anzahl.
+    """
     result = defaultdict(int)
     for entry in logs:
         result[entry.pfad] += 1
@@ -53,6 +78,11 @@ def zaehle_endpoints(logs: list[LogEntry]) -> dict[str, int]:
 
 
 def zaehle_pro_stunde(logs: list[LogEntry]) -> dict[str, int]:
+    """Zählt Requests pro Stunde.
+
+    Returns:
+        Dict aus Stunde und gefundener Anzahl.
+    """
     result = defaultdict(int)
     for entry in logs:
         result[entry.zeit[:2]] += 1
@@ -60,10 +90,24 @@ def zaehle_pro_stunde(logs: list[LogEntry]) -> dict[str, int]:
 
 
 def top_langsamste(logs: list[LogEntry], n: int = 10) -> list[LogEntry]:
+    """Listet eine n Anzahl an top langsamsten Einträgen in einer LogEntry Liste.
+
+    Args:
+        logs: LogEntry Liste
+        n: Maximale Anzahl Ergebnisse.
+
+    Returns:
+        Liste der n langsamsten Einträge.
+    """
     return sorted(logs, key=lambda e: e.dauer_ms, reverse=True)[:n]
 
 
 def erstelle_report(logs: list[LogEntry]) -> dict:
+    """Erstellt einen Report für eine Liste von LogEntry dataclasses.
+
+    Returns:
+        Dict mit Schlüsseln anzahl_requests, status_verteilung, endpoints, requests_pro_stunde, fehlerquote, top_langsamste.
+    """
     fehler = sum(1 for entry in logs if entry.status >= 400)
     return {
         "anzahl_requests": len(logs),
@@ -76,6 +120,7 @@ def erstelle_report(logs: list[LogEntry]) -> dict:
 
 
 def schreibe_json(pfad: str, inhalt: dict) -> None:
+    """Schreibt ein Dict als JSON-Datei."""
     with open(pfad, "w", encoding="utf-8") as f:
         json.dump(inhalt, f, indent=2, ensure_ascii=False)
 
