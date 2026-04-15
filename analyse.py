@@ -112,6 +112,13 @@ def main() -> None:
         )
         sys.exit(1)
 
+    if not logs:
+        print(
+            f"Warnung: Keine Log-Einträge in '{args.input_file}' gefunden",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
     report = erstelle_report(logs)
     schreibe_json(args.output_file, report)
     print(f"Report erstellt: {len(logs)} Einträge analysiert")
