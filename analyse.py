@@ -119,7 +119,6 @@ def main() -> None:
         )
         sys.exit(1)
 
-
     report = erstelle_report(logs)
     schreibe_json(args.output_file, report)
     print(f"Report erstellt: {len(logs)} Einträge analysiert")
