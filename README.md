@@ -27,6 +27,18 @@ Erwartet standardmäßig ein `access.log` im selben Verzeichnis. Schreibt standa
 
 [Beispiel](report.example.json)
 
+## Deployment
+
+Zunächst muss das Docker image gebaut werden
+```bash
+docker build -t log-analyse-script .
+```
+
+Anschließend kann auf dem Image das python script ausgeführt werden. Dafür muss der "host_path" zur log datei angegeben werden. Die Datei wird anschließend im Docker unter data gespeichert. Zudem wird der "log_file_name" zum zu parsenden log file und ein "report_file_name", wie der fertige report heißen soll, benötigt
+```bash
+docker run -v [host_path]:/data log-analyse-script /data/[log_file_name].log /data/[report_file_name].json
+```
+
 ## Entwicklung
 
 ```bash
