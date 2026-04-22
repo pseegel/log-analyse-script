@@ -23,6 +23,10 @@ python analyse.py -h
 
 Erwartet standardmäßig ein `access.log` im selben Verzeichnis. Schreibt standardmäßig ein `report.json`. Input und Output Files können als Parameter übergeben und somit geändert werden.
 
+## Beispiel-Input
+
+[Beispiel](access.log)
+
 ## Beispiel-Output
 
 [Beispiel](report.example.json)
