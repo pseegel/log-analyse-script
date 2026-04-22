@@ -1,0 +1,12 @@
+.github
+.ruff_cache
+.venv
+.gitignore
+
+__pycache__
+
+*.log
+*.md
+*.json
+*.txt
+*.toml
