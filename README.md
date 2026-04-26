@@ -82,7 +82,7 @@ flowchart LR
 
 ### Konfigurationsdateien
 
-Die Dateien `task-definition.template.json` und `overrides.template.json` enthalten Platzhalter (`<AWS_ACCOUNT_ID>`, `<S3_BUCKET_NAME>`). Lokale Kopien ohne `.template` im Namen anlegen und Platzhalter durch echte Werte ersetzen — die lokalen Dateien sind via `.gitignore` ausgeschlossen.
+Die Dateien `task-definition.template.json` und `overrides.template.json` enthalten Platzhalter (`<AWS_ACCOUNT_ID>`, `<S3_BUCKET_NAME>`). Lokale Kopien ohne `.template` im Namen anlegen und Platzhalter durch echte Werte ersetzen, die lokalen Dateien sind via `.gitignore` ausgeschlossen.
 
 ### Setup
 
@@ -98,8 +98,8 @@ docker push <AWS_ACCOUNT_ID>.dkr.ecr.eu-central-1.amazonaws.com/log-analyse-scri
 **2. IAM-Rollen anlegen**
 
 Zwei Rollen werden benötigt:
-- `ecsTaskExecutionRole` — erlaubt ECS, das Image aus ECR zu ziehen und Logs zu schreiben
-- `ecsTaskS3Role` — erlaubt dem Container, auf S3 zuzugreifen
+- `ecsTaskExecutionRole` erlaubt ECS, das Image aus ECR zu ziehen und Logs zu schreiben
+- `ecsTaskS3Role` erlaubt dem Container, auf S3 zuzugreifen
 
 ```bash
 aws iam create-role --role-name ecsTaskExecutionRole --assume-role-policy-document file://trust-policy.json
@@ -150,4 +150,4 @@ aws logs get-log-events \
 
 ## Lizenz
 
-MIT — siehe [LICENSE](LICENSE.md).
+MIT siehe [LICENSE](LICENSE.md).
