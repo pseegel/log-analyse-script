@@ -14,8 +14,13 @@ env/
 Thumbs.db
 
 # Projekt-Output
-report.json
+report*.json
 
 # Lokale Test-Dateien
+access*.log
 test*.log
 test*.json
+
+# Lokale Konfigurationsdateien
+overrides.json
+task-definition.json
