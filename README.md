@@ -7,7 +7,7 @@ Liest eine Logdatei im Format `datum zeit methode pfad status dauer_ms` und erst
 
 Lernprojekt zur Vertiefung idiomatischer Python-Muster (Dataclasses, argparse, Type Hints) sowie containerbasierter Cloud-Deployments (Docker, AWS ECS Fargate, S3) an einem konkreten Problem.
 
-Eine parallele Go-Variante mit Fokus auf nebenläufige Verarbeitung existiert unter [log-analyse-go](https://github.com/pseegel/log-analyse-go). Beide Projekte lösen dasselbe Problem in unterschiedlichen Sprachen und mit verschiedenen Schwerpunkten — die Python-Version legt den Fokus auf Deployment und Cloud-Integration, die Go-Version auf Concurrency-Patterns.
+Eine parallele Go-Variante mit Fokus auf nebenläufige Verarbeitung existiert unter [log-analyse-go](https://github.com/pseegel/log-analyse-go). Beide Projekte lösen dasselbe Problem in unterschiedlichen Sprachen und mit verschiedenen Schwerpunkten. Die Python-Version legt den Fokus auf Deployment und Cloud-Integration, die Go-Version auf Concurrency-Patterns.
 
 ## Anforderungen
 - Python >= 3.12
