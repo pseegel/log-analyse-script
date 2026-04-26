@@ -9,4 +9,5 @@ __pycache__
 *.md
 *.json
 *.txt
+!requirements.txt
 *.toml

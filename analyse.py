@@ -1,14 +1,17 @@
 """Analysiert eine Webserver-Logdatei und erstellt einen JSON-Report."""
 
+from botocore.exceptions import ClientError
 from collections import defaultdict
 from dataclasses import dataclass, asdict
 import argparse
+import os
+import boto3
 import json
 import sys
 
 DEFAULT_INPUT_PATH = "access.log"
 DEFAULT_OUTPUT_PATH = "report.json"
-VERSION = "0.4.0"
+VERSION = "0.5.0"
 
 
 @dataclass
@@ -50,6 +53,23 @@ def lade_logs(pfad: str) -> list[LogEntry]:
     """
     with open(pfad, encoding="utf-8") as file:
         return [parse_zeile(zeile) for zeile in file]
+
+
+def lade_logs_s3(client, bucket: str, key: str) -> list[LogEntry]:
+    """Liest eine Log Datei ein und Parst sie zu einer Liste von LogEntry Dataclasses.
+
+    Args:
+        bucket: Name des S3-Buckets.
+        key: Schlüssel der Log-Datei im Bucket.
+
+    Returns:
+        Liste der gefundenen Einträge.
+
+    Raises:
+        FileNotFoundError: Wenn die Datei nicht existiert.
+    """
+    body = client.get_object(Bucket=bucket, Key=key)["Body"].read()
+    return [parse_zeile(zeile) for zeile in body.decode("utf-8").splitlines()]
 
 
 def zaehle_status(logs: list[LogEntry]) -> dict[int, int]:
@@ -125,47 +145,88 @@ def schreibe_json(pfad: str, inhalt: dict) -> None:
         json.dump(inhalt, f, indent=2, ensure_ascii=False)
 
 
+def schreibe_json_s3(client, bucket: str, key: str, inhalt: dict) -> None:
+    """Schreibt ein Dict als JSON-Datei."""
+    client.put_object(
+        Bucket=bucket,
+        Key=key,
+        Body=json.dumps(inhalt, indent=2, ensure_ascii=False).encode("utf-8"),
+    )
+
+
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description=(
-            "Parst Webserver-Logs und erzeugt einen aggregierten JSON-Report "
-            "(Status, Endpoints, Latenz)"
+    bucket = os.getenv("S3_BUCKET")
+    input_key = os.getenv("S3_INPUT_KEY", "input/access.log")
+    output_key = os.getenv("S3_OUTPUT_KEY", "output/report.json")
+
+    s3_modus = bucket and input_key and output_key
+
+    if s3_modus:
+        client = boto3.client("s3", region_name="eu-central-1")
+        try:
+            logs = lade_logs_s3(client, bucket, input_key)
+            input_pfad = f"s3://{bucket}/{input_key}"
+        except ClientError as e:
+            print(
+                f"Fehler: Datei '{input_key}' im Bucket '{bucket}' nicht gefunden: {e}",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+    else:
+        parser = argparse.ArgumentParser(
+            description=(
+                "Parst Webserver-Logs und erzeugt einen aggregierten JSON-Report "
+                "(Status, Endpoints, Latenz)"
+            )
         )
-    )
-    parser.add_argument(
-        "input_file",
-        nargs="?",
-        default=DEFAULT_INPUT_PATH,
-        metavar="PFAD",
-        help="Pfad zur einzulesenden Log Datei",
-    )
-    parser.add_argument(
-        "output_file",
-        nargs="?",
-        default=DEFAULT_OUTPUT_PATH,
-        metavar="PFAD",
-        help="Pfad zur ausgegebenen JSON Datei",
-    )
-    parser.add_argument("--version", action="version", version="%(prog)s " + VERSION)
-    args = parser.parse_args()
-    try:
-        logs = lade_logs(args.input_file)
-    except FileNotFoundError:
-        print(
-            f"Fehler: Datei '{args.input_file}' nicht gefunden",
-            file=sys.stderr,
+        parser.add_argument(
+            "input_file",
+            nargs="?",
+            default=DEFAULT_INPUT_PATH,
+            metavar="PFAD",
+            help="Pfad zur einzulesenden Log Datei",
         )
-        sys.exit(1)
+        parser.add_argument(
+            "output_file",
+            nargs="?",
+            default=DEFAULT_OUTPUT_PATH,
+            metavar="PFAD",
+            help="Pfad zur ausgegebenen JSON Datei",
+        )
+        parser.add_argument(
+            "--version", action="version", version="%(prog)s " + VERSION
+        )
+        args = parser.parse_args()
+        try:
+            logs = lade_logs(args.input_file)
+            input_pfad = args.input_file
+        except FileNotFoundError:
+            print(
+                f"Fehler: Datei '{args.input_file}' nicht gefunden",
+                file=sys.stderr,
+            )
+            sys.exit(1)
 
     if not logs:
         print(
-            f"Warnung: Keine Log-Einträge in '{args.input_file}' gefunden",
+            f"Warnung: Keine Log-Einträge in '{input_pfad}' gefunden",
             file=sys.stderr,
         )
         sys.exit(1)
-
     report = erstelle_report(logs)
-    schreibe_json(args.output_file, report)
+
+    if s3_modus:
+        try:
+            schreibe_json_s3(client, bucket, output_key, report)
+        except ClientError as e:
+            print(
+                f"Fehler: Konnte Report nicht in S3 speichern: {e}",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+    else:
+        schreibe_json(args.output_file, report)
+
     print(f"Report erstellt: {len(logs)} Einträge analysiert")
     print(f"Fehlerquote: {report['fehlerquote']:.1%}")
 

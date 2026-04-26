@@ -1,0 +1,13 @@
+{
+  "containerOverrides": [
+    {
+      "name": "log-analyse-script",
+      "environment": [
+        {"name": "S3_BUCKET", "value": "<S3_BUCKET_NAME>"},
+        {"name": "S3_INPUT_KEY", "value": "input/access.log"},
+        {"name": "S3_OUTPUT_KEY", "value": "output/report.json"},
+        {"name": "AWS_DEFAULT_REGION", "value": "eu-central-1"}
+      ]
+    }
+  ]
+}
