@@ -3,6 +3,12 @@
 Kleines Python-Tool zur Analyse von Webserver-Logs.
 Liest eine Logdatei im Format `datum zeit methode pfad status dauer_ms` und erstellt einen JSON-Report mit Status-Verteilung, Endpoint-Statistik, stündlichem Aufkommen und den langsamsten Requests.
 
+## Motivation
+
+Lernprojekt zur Vertiefung idiomatischer Python-Muster (Dataclasses, argparse, Type Hints) sowie containerbasierter Cloud-Deployments (Docker, AWS ECS Fargate, S3) an einem konkreten Problem.
+
+Eine parallele Go-Variante mit Fokus auf nebenläufige Verarbeitung existiert unter [log-analyse-go](https://github.com/pseegel/log-analyse-go). Beide Projekte lösen dasselbe Problem in unterschiedlichen Sprachen und mit verschiedenen Schwerpunkten — die Python-Version legt den Fokus auf Deployment und Cloud-Integration, die Go-Version auf Concurrency-Patterns.
+
 ## Anforderungen
 - Python >= 3.12
 - Keine externen Abhängigkeiten zur Laufzeit
@@ -141,3 +147,7 @@ aws logs get-log-events \
   --log-stream-name ecs/log-analyse-script/<TASK_ID> \
   --region eu-central-1
 ```
+
+## Lizenz
+
+MIT — siehe [LICENSE](LICENSE.md).
