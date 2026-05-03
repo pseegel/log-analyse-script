@@ -60,6 +60,49 @@ ruff check .
 ruff format .
 ```
 
+## Terraform
+
+Der Ordner `terraform/` enthält die komplette AWS-Infrastruktur als Code. Statt die Ressourcen einzeln per CLI anzulegen (siehe `## AWS Deployment` weiter unten als manuelle Alternative), wird hier alles deklarativ beschrieben.
+
+Provisioniert werden:
+
+- S3-Bucket (`log-analyse-paul-tf`) für Input und Output
+- ECR-Repository für das Container-Image
+- ECS-Cluster
+- CloudWatch Log Group
+- Zwei IAM-Rollen: Execution Role (für ECS selbst) und Task Role (für den Container, S3-Zugriff)
+- ECS Task Definition
+
+### Voraussetzungen
+
+- Terraform >= 1.5
+- AWS CLI mit konfiguriertem Account (`aws configure`)
+
+### Workflow
+
+```bash
+cd terraform
+terraform init     # einmalig: lädt den AWS-Provider
+terraform plan     # zeigt was angelegt wird
+terraform apply    # legt die Infrastruktur an
+```
+
+Nach erfolgreichem `apply` steht die komplette AWS-Umgebung. Container-Image bauen und pushen, Logfile hochladen, Task starten, siehe `## AWS Deployment`.
+
+### Aufräumen
+
+Nach Sessions die Ressourcen abräumen, um Kosten zu vermeiden:
+
+```bash
+terraform destroy
+```
+
+Räumt alle von Terraform verwalteten Ressourcen ab. Der Code bleibt, beim nächsten Mal stellt `terraform apply` alles in unter einer Minute wieder her.
+
+### State
+
+Der Terraform-State (`terraform.tfstate`) liegt lokal und ist via `.gitignore` ausgeschlossen. Für ein Lernprojekt ausreichend; in einem Team-Setup würde der State in einen Remote Backend (S3 + DynamoDB) ausgelagert.
+
 ## AWS Deployment
 
 Das Tool kann auch als Container in AWS ECS Fargate ausgeführt werden. Die Logdatei wird aus einem S3-Bucket gelesen und der Report nach S3 zurückgeschrieben.
