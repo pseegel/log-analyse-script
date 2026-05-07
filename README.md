@@ -60,6 +60,22 @@ ruff check .
 ruff format .
 ```
 
+## CI/CD
+
+GitHub Actions Pipeline (`.github/workflows/ci.yml`) mit drei Stages: 
+
+Lint (ruff) → Test (pytest) → Build & Push (ECR).
+
+Bei Pull Requests gegen `master` laufen nur Lint und Test als Quality Gate. Bei Push/Merge auf `master` wird zusätzlich das Docker-Image gebaut, mit Commit-SHA und `latest` getaggt und nach ECR gepusht.
+
+### Secrets
+
+Die Pipeline authentifiziert sich über einen dedizierten IAM-User (`github-actions-ci`) mit einer Least-Privilege-Policy, die ausschließlich ECR-Push und ECS-Update erlaubt. Credentials liegen als GitHub Secrets (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`). In einer Produktionsumgebung würde stattdessen OIDC Federation genutzt, um langlebige Secrets zu vermeiden.
+
+### Geplant
+
+Deploy-Stage: automatisches ECS-Fargate-Deployment nach erfolgreichem Image-Push. Voraussetzung ist ein ECS Service als Terraform-Ressource.
+
 ## Terraform
 
 Der Ordner `terraform/` enthält die komplette AWS-Infrastruktur als Code. Statt die Ressourcen einzeln per CLI anzulegen (siehe `## AWS Deployment` weiter unten als manuelle Alternative), wird hier alles deklarativ beschrieben.
