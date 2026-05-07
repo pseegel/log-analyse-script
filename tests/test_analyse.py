@@ -17,17 +17,21 @@ def test_parse_zeile_gueltige_zeile():
         dauer_ms=150,
     )
 
+
 def test_parse_zeile_zu_kurze_zeile():
     with pytest.raises(IndexError):
         parse_zeile("2024-01-15 08:23:45 GET /api/users 200")
+
 
 def test_parse_zeile_ungueltige_status():
     with pytest.raises(ValueError):
         parse_zeile("2024-01-15 08:23:45 GET /api/users ABC 150")
 
+
 def test_parse_zeile_ungueltige_dauer():
     with pytest.raises(ValueError):
         parse_zeile("2024-01-15 08:23:45 GET /api/users 200 XYZ")
+
 
 def test_zaehle_status_eintrag():
     logs = [
